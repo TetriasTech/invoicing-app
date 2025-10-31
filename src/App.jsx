@@ -74,6 +74,13 @@ function getTodayLocalDate() {
   return `${year}-${month}-${day}`;
 }
 
+// Helper function to sanitize address for filename
+function sanitizeFilename(address) {
+  // Replace problematic characters with -, but keep spaces, commas, and forward slashes as requested
+  // Note: forward slashes might cause issues in filenames, but keeping as per user request
+  return address.replace(/[<>:"|?*\\/]/g, '-').trim();
+}
+
 // Helper function to set PDF form field text safely
 function setFormField(form, fieldName, value) {
   try {
@@ -232,7 +239,8 @@ export default function App() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `invoice-${invoiceNum}.pdf`
+      const sanitizedAddress = sanitizeFilename(address)
+      a.download = `${sanitizedAddress}.pdf`
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -246,7 +254,7 @@ export default function App() {
       // Update the UI to show the next invoice number immediately
       setInvoiceNumber(nextInvoiceNumber)
       
-      setMessage(`Generated invoice-${invoiceNum}.pdf`)
+      setMessage(`Generated ${sanitizedAddress}.pdf`)
       
     } catch (error) {
       console.error('Error filling PDF:', error)
